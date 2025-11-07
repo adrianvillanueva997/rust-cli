@@ -1,8 +1,13 @@
 use core::fmt;
-use std::{fs::File, path::Path};
+use std::path::Path;
 
 use clap::Parser;
-use csv::ReaderBuilder;
+use polars::{
+    error::PolarsResult,
+    frame::DataFrame,
+    io::SerReader,
+    prelude::{CsvReadOptions, JsonReader},
+};
 
 enum SupportedFiles {
     Csv,
@@ -18,10 +23,23 @@ impl fmt::Display for SupportedFiles {
     }
 }
 
-fn process_csv_file(path: &Path) {
-    let file_content = File::open(path).unwrap();
-    let mut reader = csv::ReaderBuilder::new().delimiter(b',').has_headers(true);
+/// .
+///
+/// # Panics
+///
+/// Panics if .
+///
+/// # Errors
+///
+/// This function will return an error if .
+fn process_csv_file(path: &Path) -> PolarsResult<DataFrame> {
+    CsvReadOptions::default()
+        .with_has_header(true)
+        .try_into_reader_with_file_path(Some(path.to_str().unwrap().into()))?
+        .finish()
 }
+
+// fn process_json_file(path: &Path) -> PolarsResult<DataFrame> {}
 #[derive(Parser, Debug)]
 #[command(version, about)]
 struct Args {
@@ -31,6 +49,7 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let path = Path::new(&args.file);
+
     if !path.exists() {
         panic!("The file {} does not exist", args.file)
     }
