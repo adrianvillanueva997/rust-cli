@@ -1,0 +1,9 @@
+[package]
+name = "rust-cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.50", features = ["derive"] }
+polars = { version = "0.51.0", features = ["csv", "json"] }
+serde = { version = "1.0.228", features = ["derive"] }
